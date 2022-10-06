@@ -23,7 +23,7 @@ colorbar
 
 function res = simulate_temp (~, temps)
 global num_elements T_hot T_cold; 
-k = 45;
+k = 400;
 L = 1;
 dx = L/num_elements;
 
