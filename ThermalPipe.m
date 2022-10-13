@@ -1,40 +1,51 @@
-t_span = [0:0.01:1]; % t is in seconds, give it 25 days
+t_span = [0:0.00003:0.003]; % t is in seconds, give it 25 days
 
-global num_elements T_hot T_cold; 
-num_elements = 10;
-T_hot =700;
+global num_elements_x num_elements_y height width T_hot T_cold; 
+num_elements_x = 80;
+num_elements_y = 40;
+width = 1;
+height = 0.5;
+
+T_hot = 700;
 T_cold = 300;
 
-dTdt = zeros(1, num_elements)';
+dTdt = zeros(num_elements_x, num_elements_y);
 
-temps_init = ones(1, num_elements)'.*T_cold;
+temps_init = ones(num_elements_x, num_elements_y).*T_cold;
+temps_init(:,1) = T_hot;
+temps_init(1,:) = T_hot;
+temps_init(:,end) = T_hot;
+temps_init(end,:) = T_hot;
+%reshape into a column vector
+temps_init = temps_init(:);
+
 
 [t, temps] = ode45(@simulate_temp, t_span, temps_init);
 
 
-[tt, yy] = meshgrid(t, [1:num_elements]);
-
-clf;
-hold on;
-contourf(tt, yy, temps', 100, 'edgecolor', 'none')
-colorbar
-
 
 
 function res = simulate_temp (~, temps)
-global num_elements T_hot T_cold; 
+global num_elements_x num_elements_y height width T_hot T_cold; 
 k = 45;
-L = 1;
-dx = L/num_elements;
 
-dTdt(1) = k*((temps(2)-2*temps(1)+T_hot)/dx^2);
+temp_frame = reshape(temps, num_elements_x, num_elements_y);
+dx = width/num_elements_x;
+dy = height/num_elements_y;
 
-    for i = 2:num_elements-1
-        dTdt(i) = k*((temps(i+1)-2*temps(i)+temps(i-1))/dx^2);
+
+dTdt(1,:) = 0;
+dTdt(:,1) = 0;
+dTdt(:,num_elements_y) = 0;
+dTdt(num_elements_x,:) = 0;
+
+    for i = 2:num_elements_x-1
+        for j = 2:num_elements_y-1
+            dTdt(i,j) = k*(((temp_frame(i+1,j)-2*temp_frame(i,j)+temp_frame(i-1,j))/dx^2) + ...
+                           ((temp_frame(i,j+1)-2*temp_frame(i,j)+temp_frame(i,j-1))/dy^2));
+        end
     end
 
-
-dTdt(num_elements) = k*((T_cold-2*temps(num_elements)+temps(num_elements-1))/dx^2);
-
-res = dTdt';
+% disp(size(dTdt))
+res = dTdt(:);
 end
