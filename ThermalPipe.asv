@@ -1,12 +1,10 @@
-t_span = [0:0.0001:0.01]; % t is in seconds, give it 25 days
+t_span = [0:0.00003:0.003]; % t is in seconds, give it 25 days
 
 global num_elements_x num_elements_y height width T_hot T_cold; 
-
-width = 0.1;
-height = 0.025;
-num_elements_y = 32;  %must be an even number
-num_elements_x = int16(num_elements_y*(width/height));
-
+num_elements_x = 80;
+num_elements_y = 40;
+width = 1;
+height = 0.5;
 
 T_0 = 293;
 T_hot = 450;
@@ -14,7 +12,7 @@ T_cold = 325;
 
 dTdt = zeros(num_elements_x, num_elements_y);
 
-temps_init = ones(num_elements_x, num_elements_y).*T_0;
+temps_init = ones(num_elements_x, num_elements_y).*T_293;
 temps_init(:,1) = T_hot;
 temps_init(1,:) = T_hot;
 temps_init(:,end) = T_hot;
