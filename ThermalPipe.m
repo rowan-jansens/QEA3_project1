@@ -1,17 +1,21 @@
-clear
-clc
+function [t, test, runtime] = ThermalPipe(element_size)
 
-
+tic;
 t_span = [0:1:1000]; % t is in seconds, give it 25 days
 
-global num_elements_x num_elements_y height width T_hot T_cold dx dy k_matrix; 
+% global num_elements_x num_elements_y height width T_hot T_cold dx dy k_matrix; 
 
 width = 10;
 height = 2.5;
-num_elements_y = 10;  %must be an even number
-num_elements_x = (width/height) * num_elements_y;
 
+dx = element_size;
+dy = element_size;
 
+num_elements_y = int16(height / element_size);
+num_elements_x = int16(width / element_size);
+disp("Num Elements: ")
+disp(num_elements_y * num_elements_x)
+    
 T_0 = 273;
 T_hot = 450;
 T_cold = 325;
@@ -27,8 +31,7 @@ temps_init(end,:) = T_hot;
 temps_init = temps_init(:);
 
 
-dx = width/num_elements_x;
-dy = height/num_elements_y;
+
 
 
 rho = 1100;
@@ -43,7 +46,7 @@ k_cheese = 0.001;
 
 k_bread = k_cheese * 10;
 
-bread_thikness = int16(0.3 * num_elements_y)
+bread_thikness = int16(0.3 * num_elements_y);
 k_matrix = ones(num_elements_x, num_elements_y).*k_cheese;
 k_matrix(:,1:bread_thikness) = k_bread;
 k_matrix(1:bread_thikness,:) = k_bread;
@@ -60,17 +63,17 @@ k_matrix(end-bread_thikness+1:end,:) = k_bread;
 options = odeset('Events',@EventsFcn);
 [t, temp_tensor, te,ye,ie] = ode113(@simulate_temp, t_span, temps_init, options);
 
-figure()
+% figure()
 clf
 test = reshape(temp_tensor, length(t), num_elements_x, num_elements_y);
 test = reshape(test(:,num_elements_x/2,num_elements_y/2), 1, length(t));
-plot(t, test)
-
+% plot(t, test)
+disp("done!")
 
 
 
 function res = simulate_temp (~, temps)
-global num_elements_x num_elements_y dx dy k_matrix; 
+% global num_elements_x num_elements_y dx dy k_matrix; 
 
 
 
@@ -94,11 +97,15 @@ end
 
 
 function [temp_end,isterminal,direction] = EventsFcn(t,temps)
-global num_elements_x num_elements_y T_cold T_hot; 
+% global num_elements_x num_elements_y T_cold T_hot; 
 temp_frame = reshape(temps, num_elements_x, num_elements_y);
 
 
-  temp_end = temp_frame(num_elements_x/2, num_elements_y/2) - T_hot; % The value that we want to be zero
-  isterminal = 0;  % Halt integration 
+  temp_end = temp_frame(num_elements_x/2, num_elements_y/2) - T_cold; % The value that we want to be zero
+  isterminal = 1;  % Halt integration 
   direction = +1;   % The zero can be approached from either direction
+end
+
+runtime = toc;
+
 end
