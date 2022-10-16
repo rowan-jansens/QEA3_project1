@@ -1,12 +1,12 @@
-function [t, test, runtime] = ThermalPipe(element_size)
+function [t, mid_temp, runtime, temp_tensor, num_elements_x, num_elements_y] = ThermalPipe(element_size, width, height, T_0, T_hot, T_cold, bread_thikness)
+
 
 tic;
-t_span = [0:1:1000]; % t is in seconds, give it 25 days
+t_span = [1:1:1000]; % t is in seconds, give it 25 days
 
 % global num_elements_x num_elements_y height width T_hot T_cold dx dy k_matrix; 
 
-width = 10;
-height = 2.5;
+
 
 dx = element_size;
 dy = element_size;
@@ -16,9 +16,7 @@ num_elements_x = int16(width / element_size);
 disp("Num Elements: ")
 disp(num_elements_y * num_elements_x)
     
-T_0 = 273;
-T_hot = 450;
-T_cold = 325;
+
 
 dTdt = zeros(num_elements_x, num_elements_y);
 temps_init = ones(num_elements_x, num_elements_y).*T_0;
@@ -42,11 +40,11 @@ k_cheese = t_cond / rho / c_v;
 
 
 %testing
-k_cheese = 0.001;
+k_cheese = 0.1403;
 
-k_bread = k_cheese * 10;
+k_bread = 0.03874;
 
-bread_thikness = int16(0.3 * num_elements_y);
+
 k_matrix = ones(num_elements_x, num_elements_y).*k_cheese;
 k_matrix(:,1:bread_thikness) = k_bread;
 k_matrix(1:bread_thikness,:) = k_bread;
@@ -54,21 +52,23 @@ k_matrix(1:bread_thikness,:) = k_bread;
 k_matrix(:,end-bread_thikness+1:end) = k_bread;
 k_matrix(end-bread_thikness+1:end,:) = k_bread;
 
-% imagesc(k_matrix)
-% axis equal
+
 
 
 
 
 options = odeset('Events',@EventsFcn);
-[t, temp_tensor, te,ye,ie] = ode113(@simulate_temp, t_span, temps_init, options);
+[t, temp_tensor] = ode113(@simulate_temp, t_span, temps_init, options);
 
-% figure()
-clf
-test = reshape(temp_tensor, length(t), num_elements_x, num_elements_y);
-test = reshape(test(:,num_elements_x/2,num_elements_y/2), 1, length(t));
-% plot(t, test)
+
+
+figure(1)
+hold on
+mid_temp = reshape(temp_tensor, length(t), num_elements_x, num_elements_y);
+mid_temp = reshape(mid_temp(:,num_elements_x/2,num_elements_y/2), 1, length(t));
+plot(t, mid_temp)
 disp("done!")
+runtime = toc;
 
 
 
@@ -106,6 +106,7 @@ temp_frame = reshape(temps, num_elements_x, num_elements_y);
   direction = +1;   % The zero can be approached from either direction
 end
 
-runtime = toc;
+
+
 
 end

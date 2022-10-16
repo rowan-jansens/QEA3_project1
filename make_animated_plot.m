@@ -1,4 +1,4 @@
-clc
+
 temp_tensor = reshape(temp_tensor, length(t), num_elements_x, num_elements_y);
 
 
@@ -13,7 +13,9 @@ set(gcf, "position", [0 0 600 600])
 subplot(2,1,1)
 hold on
 [xx, yy] = meshgrid(linspace(0, width, num_elements_x), linspace(0, height, num_elements_y));
-[~, s] = contourf(xx', yy', reshape(temp_tensor(1,:,:), num_elements_x, num_elements_y), 150, 'edgecolor', 'none');
+% [~, s] = contourf(xx', yy', reshape(temp_tensor(1,:,:), num_elements_x, num_elements_y), 300, 'edgecolor', 'none');
+s = surf(xx', yy', reshape(temp_tensor(1,:,:), num_elements_x, num_elements_y), 'edgecolor', 'none')
+
 colorbar;
 colormap hot;
 clim([T_0 T_hot])
