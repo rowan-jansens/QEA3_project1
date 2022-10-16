@@ -1,4 +1,4 @@
-function [t, mid_temp, runtime, temp_tensor, num_elements_x, num_elements_y, cook_time] = ThermalPipe(element_size, width, height, T_0, T_hot, T_cold, bread_thikness)
+function [t, mid_temp, runtime, temp_tensor, num_elements_x, num_elements_y, cook_time] = ThermalModel(element_size, width, height, T_0, T_hot, T_cold, bread_thikness)
 
 
 tic;
