@@ -1,33 +1,34 @@
 %animated plot
 width = 100;
-height = 25;
+height = 30;
 T_0 = 273;
 T_hot = 450;
 T_cold = 325;
 
 
-element_size = 0.3; %mm
+element_size = 0.5; %mm
 dx = element_size;
 dy = element_size;
 num_elements_y = int16(height / element_size);
 num_elements_x = int16(width / element_size);
-bread_thikness = int16(0.3 * num_elements_y);
+bread_thikness = int16(0.1 * num_elements_y);
 
 
-[t, mid_temp, runtime, temp_tensor, num_elements_x, num_elements_y] = ThermalPipe(element_size, width, height, T_0, T_hot, T_cold, bread_thikness);
+[t, mid_temp, runtime, temp_tensor, num_elements_x, num_elements_y, cook_time] = ThermalPipe(element_size, width, height, T_0, T_hot, T_cold, bread_thikness);
 max(t)
+disp(cook_time)
 
 %%
 
 width = 100;
-height = 25;
+height = 30;
 T_0 = 273;
 T_hot = 450;
 T_cold = 325;
 
 
 % mesh refinment
-mesh_size = [3 2 1 0.75 0.5 0.3 0.25];
+mesh_size = [3 2 1 0.75 0.5 0.3 0.2];
 test_y = zeros(1000, length(mesh_size));
 test_x = zeros(1000, length(mesh_size));
 for i = 1:length(mesh_size)
@@ -36,7 +37,7 @@ for i = 1:length(mesh_size)
 dy = element_size;
 num_elements_y = int16(height / element_size);
 num_elements_x = int16(width / element_size);
-bread_thikness = int16(0.3 * num_elements_y);
+bread_thikness = int16(0.1 * num_elements_y);
     [t, mid_temp, r] = ThermalPipe(element_size, width, height, T_0, T_hot, T_cold, bread_thikness);
     max(t)
     test_y(1:length(t), i) = mid_temp';
